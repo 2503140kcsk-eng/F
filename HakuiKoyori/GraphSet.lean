@@ -1,9 +1,13 @@
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import HakuiKoyori.Number
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity
+public import HakuiKoyori.Number
+
+@[expose] public section
 
 namespace HakuiKoyori
 
@@ -52,9 +56,11 @@ two vertices are adjacent exactly when one ingredient changes.
 def koyoriHypercube (n : Nat) : SimpleGraph (ReagentSet n) where
   Adj A B := A ≠ B ∧ (A \ B).card + (B \ A).card = 1
   symm := by
+    constructor
     intro A B h
     exact ⟨h.1.symm, by simpa [Nat.add_comm] using h.2⟩
   loopless := by
+    constructor
     intro A h
     exact h.1 rfl
 
@@ -96,13 +102,15 @@ theorem koyoriSparkTransform_gt (gardenFunction : Nat → Nat) (n : Nat) :
   have hmargin : gardenFunction n ≤ exponent := by
     dsimp [exponent]
     nlinarith [hmax]
+  have hpow : exponent ≤ 2 ^ exponent :=
+    nat_le_two_pow exponent
   have hpos : 0 < 2 ^ exponent := by
     positivity
-  have hstep : 2 ^ exponent < 2 ^ (exponent + 1) := by
+  have hpowStep : 2 ^ exponent < 2 ^ (exponent + 1) := by
     rw [pow_succ]
     nlinarith [hpos]
   have hfinal : gardenFunction n < 2 ^ (exponent + 1) :=
-    lt_of_le_of_lt hmargin hstep
+    lt_of_le_of_lt (Nat.le_trans hmargin hpow) hpowStep
   have hexponent :
       exponent + 1 =
         prefixMaximum gardenFunction n + graphSetPrefixMaximum n + n + 3 := by
@@ -116,11 +124,16 @@ theorem koyoriSparkTransform_gt (gardenFunction : Nat → Nat) (n : Nat) :
 theorem koyoriSparkTransform_monotone (gardenFunction : Nat → Nat) :
     Monotone (koyoriSparkTransform gardenFunction) := by
   intro a b hab
-  have hGarden := prefixMaximum_monotone gardenFunction hab
-  have hGraph := prefixMaximum_monotone graphSetCount hab
+  have hGarden : prefixMaximum gardenFunction a ≤ prefixMaximum gardenFunction b :=
+    prefixMaximum_monotone gardenFunction hab
+  have hGraph : graphSetPrefixMaximum a ≤ graphSetPrefixMaximum b :=
+    prefixMaximum_monotone graphSetCount hab
   have hexponent :
       prefixMaximum gardenFunction a + graphSetPrefixMaximum a + a + 3 ≤
         prefixMaximum gardenFunction b + graphSetPrefixMaximum b + b + 3 := by
+    change prefixMaximum gardenFunction a + prefixMaximum graphSetCount a + a + 3 ≤
+      prefixMaximum gardenFunction b + prefixMaximum graphSetCount b + b + 3
+    change prefixMaximum graphSetCount a ≤ prefixMaximum graphSetCount b at hGraph
     nlinarith [hGarden, hGraph, hab]
   unfold koyoriSparkTransform
   gcongr
