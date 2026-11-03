@@ -29,7 +29,7 @@ For each \(n\), let the reagent universe be the finite power set
 V_n=\mathcal P([n]).
 \]
 
-In Lean this is represented by Finset (Fin n): each vertex is a subset of the finite label set Fin n.
+In Lean each vertex is represented by its characteristic function Fin n → Bool, with the corresponding finite subset recovered by reagentSubset. This is the standard powerset/function correspondence.
 
 Define the \(n\)-dimensional hypercube graph \(Q_n\) on \(V_n\). Two vertices \(A,B\) are adjacent exactly when
 
