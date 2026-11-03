@@ -126,7 +126,7 @@ theorem koyoriSparkTransform_gt (gardenFunction : Nat → Nat) (n : Nat) :
       2 ^ exponent < 2 ^ exponent + 2 ^ exponent :=
         Nat.lt_add_of_pos_right hpos
       _ = 2 ^ exponent * 2 := by ring
-      _ = 2 ^ (exponent + 1) := by rw [pow_succ]
+      _ = 2 ^ (exponent + 1) := (pow_succ 2 exponent).symm
   have hfinal : gardenFunction n < 2 ^ (exponent + 1) :=
     lt_of_le_of_lt (Nat.le_trans hmargin hpow) hpowStep
   have hexponent :
