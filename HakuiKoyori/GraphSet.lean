@@ -86,6 +86,9 @@ of Q_n. This is a natural number because the vertex and graph types are finite.
 -/
 noncomputable def graphSetCount (n : Nat) : Nat := by
   classical
+  letI : Fintype (ReagentSet n) := Fintype.ofFinite (ReagentSet n)
+  letI : DecidableEq (ReagentSet n) := Classical.decEq _
+  letI : Fintype (SimpleGraph (ReagentSet n)) := inferInstance
   exact Fintype.card (KoyoriSubgraphSpace n)
 
 /-- Running maximum of the finite graph/set experiment counts. -/
@@ -119,8 +122,11 @@ theorem koyoriSparkTransform_gt (gardenFunction : Nat → Nat) (n : Nat) :
   have hpos : 0 < 2 ^ exponent := by
     positivity
   have hpowStep : 2 ^ exponent < 2 ^ (exponent + 1) := by
-    rw [pow_succ]
-    nlinarith [hpos]
+    calc
+      2 ^ exponent < 2 ^ exponent + 2 ^ exponent :=
+        Nat.lt_add_of_pos_right hpos
+      _ = 2 ^ exponent * 2 := by ring
+      _ = 2 ^ (exponent + 1) := by rw [pow_succ]
   have hfinal : gardenFunction n < 2 ^ (exponent + 1) :=
     lt_of_le_of_lt (Nat.le_trans hmargin hpow) hpowStep
   have hexponent :
