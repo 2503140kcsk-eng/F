@@ -8,7 +8,7 @@ For n in the natural numbers, the label type is Fin n, and the reagent/vertex un
 V_n=\mathcal P(\operatorname{Fin}(n)).
 \]
 
-Lean representation: ReagentSet n := Finset (Fin n).
+Lean representation: ReagentSet n := Fin n → Bool, the characteristic functions of subsets. The map reagentSubset converts each vertex into the corresponding Finset (Fin n).
 
 ## 2. Hypercube graph
 
@@ -21,7 +21,7 @@ Q_n(A,B)\iff A\ne B\ \land\
 
 An edge is a one-ingredient change between two subsets. This is the usual n-dimensional hypercube graph, with vertices represented as subsets rather than bit strings.
 
-Lean representation: koyoriHypercube n.
+Lean representation: koyoriHypercube n, with adjacency tested using the symmetric difference of reagentSubset outputs.
 
 ## 3. Set of graph experiments
 
@@ -33,7 +33,7 @@ The experiment family is the type of all spanning subgraphs of Q_n:
 
 Lean representation: KoyoriSubgraphSpace n.
 
-Since Fin n is finite, its finite-set type is finite. The simple-graph type on a finite vertex type is finite, and a subtype of a finite type is finite. Thus the family has a natural-number cardinality:
+The characteristic-function type Fin n → Bool is finite. The simple-graph type on a finite vertex type is finite, and a subtype of a finite type is finite. Thus the family has a natural-number cardinality:
 
 \[
 C(n)=|\mathcal E_n|\in\mathbb N.
