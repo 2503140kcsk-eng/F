@@ -46,15 +46,27 @@ theorem prefixMaximum_monotone (f : Nat → Nat) :
   | @step b hab ih =>
       exact le_trans ih (le_max_left _ _)
 
-/-- A reagent is a subset of the finite set of n labelled ingredients. -/
-abbrev ReagentSet (n : Nat) := Finset (Fin n)
+/-- A reagent set is represented by its characteristic function on Fin n. -/
+abbrev ReagentSet (n : Nat) := Fin n → Bool
+
+/-- Convert a characteristic function into its corresponding finite subset. -/
+def reagentSubset {n : Nat} (A : ReagentSet n) : Finset (Fin n) :=
+  Finset.univ.filter (fun i => A i = true)
+
+@[simp]
+theorem mem_reagentSubset {n : Nat} (A : ReagentSet n) (i : Fin n) :
+    i ∈ reagentSubset A ↔ A i = true := by
+  simp [reagentSubset]
 
 /--
-The Koyori laboratory graph Q_n. Its vertices are all subsets of Fin n;
-two vertices are adjacent exactly when one ingredient changes.
+The Koyori laboratory graph Q_n. Its vertices are characteristic functions
+for all subsets of Fin n; two vertices are adjacent exactly when one
+ingredient changes.
 -/
 def koyoriHypercube (n : Nat) : SimpleGraph (ReagentSet n) where
-  Adj A B := A ≠ B ∧ (A \ B).card + (B \ A).card = 1
+  Adj A B := A ≠ B ∧
+    (reagentSubset A \ reagentSubset B).card +
+      (reagentSubset B \ reagentSubset A).card = 1
   symm := by
     constructor
     intro A B h
