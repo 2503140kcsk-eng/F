@@ -95,7 +95,7 @@ theorem koyoriSparkTransform_gt (gardenFunction : Nat → Nat) (n : Nat) :
     le_prefixMaximum gardenFunction n
   have hmargin : gardenFunction n ≤ exponent := by
     dsimp [exponent]
-    omega
+    nlinarith [hmax]
   have hpos : 0 < 2 ^ exponent := by
     positivity
   have hstep : 2 ^ exponent < 2 ^ (exponent + 1) := by
@@ -106,8 +106,7 @@ theorem koyoriSparkTransform_gt (gardenFunction : Nat → Nat) (n : Nat) :
   have hexponent :
       exponent + 1 =
         prefixMaximum gardenFunction n + graphSetPrefixMaximum n + n + 3 := by
-    dsimp [exponent]
-    omega
+    simp [exponent, Nat.add_assoc]
   change gardenFunction n <
     2 ^ (prefixMaximum gardenFunction n + graphSetPrefixMaximum n + n + 3)
   rw [← hexponent]
@@ -122,7 +121,7 @@ theorem koyoriSparkTransform_monotone (gardenFunction : Nat → Nat) :
   have hexponent :
       prefixMaximum gardenFunction a + graphSetPrefixMaximum a + a + 3 ≤
         prefixMaximum gardenFunction b + graphSetPrefixMaximum b + b + 3 := by
-    omega
+    nlinarith [hGarden, hGraph, hab]
   unfold koyoriSparkTransform
   gcongr
 
